@@ -1,3 +1,4 @@
+
 """
 A smart home function that can push configuration updates to a Google Cloud IoT device
 to control individually a few pins
@@ -90,7 +91,7 @@ def on_sync(input, requestId):
                  "type": "action.devices.types.SWITCH",
                  "traits": ["action.devices.traits.OnOff"],
                  "name": {"name": "red LED"},
-                 "willReportState": False,
+                 "willReportState": True,
                  "deviceInfo": deviceInfo,
                  "customData": {"color": "red"}
                },
@@ -100,7 +101,7 @@ def on_sync(input, requestId):
                  "type": "action.devices.types.SWITCH",
                  "traits": ["action.devices.traits.OnOff"],
                  "name": {"name": "yellow LED"},
-                 "willReportState": False,
+                 "willReportState": True,
                  "deviceInfo": deviceInfo,
                  "customData": {"color": "yellow"}
                } 
@@ -109,7 +110,7 @@ def on_sync(input, requestId):
     })
 
 def on_execute(commands, requestId):
-#   print("Command", commands)
+    print("Command", commands)
     for command in commands:
         results = []
         config = ''
@@ -118,9 +119,10 @@ def on_execute(commands, requestId):
             for execution in command['execution']:
                 execCommand = execution['command']
                 if execCommand == 'action.devices.commands.OnOff':
-                    onOff = (0,1)[execution['params']['on']]
-                    led = device['customData']['color']
-                    config += f'"{led}":{onOff},'
+                    onOff = execution['params']['on']
+                    onOffString = ['false','true'][onOff]
+                    led   = device['customData']['color']
+                    config += f'"{led}":{onOffString},'
                     results.append({
                         'ids'    : [deviceId],
                         'status' : 'SUCCESS',
@@ -149,10 +151,8 @@ def on_execute(commands, requestId):
 
 def on_query(devices, requestId):
     state = get_state()
-    binaryRed = state.get('red', 0)
-    binaryYel = state.get('yel', 0)
-    red = (False, True)[binaryRed]
-    yel = (False, True)[binaryYel]
+    red = state.get('red', False)
+    yel = state.get('yellow', False)
     print('Got QUERY:', red, yel)
  
     return jsonify({
@@ -184,3 +184,4 @@ def handle_device(request):
             return on_query(input['payload']['devices'], requestId)
 #        else: ignore ...
     return jsonify("{ 'requestId':" + requestId + "}")
+
