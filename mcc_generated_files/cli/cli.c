@@ -61,7 +61,7 @@ static uint8_t index = 0;
 static bool commandTooLongFlag = false;
 
 const char * const cli_version_number             = "2.0";
-const char * const firmware_version_number        = "1.1.0";
+const char * const firmware_version_number        = "AVR Voice Control";
 
 static void command_received(char *command_text);
 static void reset_cmd(char *pArg);
@@ -130,7 +130,7 @@ absolutetime_t CLI_task(void* param)
       if(c == '\r' || c == '\n')
       {
          command[index] = 0;
-         
+
          if(!commandTooLongFlag)
          {
             if( endOfLineTest(c) )
@@ -157,7 +157,7 @@ absolutetime_t CLI_task(void* param)
          }
       }
    }
-	
+
    return CLI_TASK_INTERVAL;
 }
 
@@ -192,7 +192,7 @@ static void set_wifi_auth(char *ssid_pwd_auth)
                 CREDENTIALS_STORAGE_save(ssid, pass, authType);
                 printf("OK\r\n\4");
             break;
-            
+
         default:
             printf("Error. Wi-Fi command format is wifi <ssid>[,<pass>].\r\n\4");
             break;
@@ -272,9 +272,9 @@ static void get_cli_version(char *pArg)
 }
 
 static void get_firmware_version(char *pArg)
-{    
+{
     (void)pArg;
-    printf("v%s\r\n\4", firmware_version_number);
+    printf("%s\r\n\4", firmware_version_number);
 }
 
 static void command_received(char *command_text)
@@ -295,7 +295,7 @@ static void command_received(char *command_text)
     for (uint8_t i = 0; i < sizeof(commands)/sizeof(*commands); i++)
     {
         cmp = strcmp(command_text, commands[i].command);
-        ct_len = strlen(command_text);        
+        ct_len = strlen(command_text);
         cc_len = strlen(commands[i].command);
 
         if (cmp == 0 && ct_len == cc_len)
@@ -317,7 +317,7 @@ static void enableUsartRxInterrupts(void)
     do {
         (void)USART2.RXDATAL;
     } while ((USART2.STATUS & USART_RXCIF_bm) != 0);
-	
+
     // Enable RX interrupt
-    USART2.CTRLA |=  1 << USART_RXCIE_bp;        
+    USART2.CTRLA |=  1 << USART_RXCIE_bp;
 }
